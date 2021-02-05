@@ -1,0 +1,7 @@
+old
+__pycache__
+*.pyc
+venv
+temp
+render.log
+*.blend*
