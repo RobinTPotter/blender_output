@@ -1,27 +1,35 @@
 from flask import Flask, request
-from flask import render_template
+from flask import render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
+
+from logging.config import dictConfig
 
 from PIL import Image
 import io
+
+import os
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
 
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
-from .functions import *
-
-
-@app.route('/')
-@app.route('/<string:name>')
-def index(name=None):
-    print(request.headers)
-    return render_template('hello.html', name=name)
-
-@app.route('/image/<int:num>')
-def image(num=None):
-    img = Image.open('temp/{:04d}.png'.format(num))
-    return serve_pil_image(img)
+from .pages import *
 
 if __name__ == "__main__":
     app.run(debug=True)
