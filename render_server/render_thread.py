@@ -10,20 +10,22 @@ class RenderThread(threading.Thread):
         self.frame = num
         self.render_path = render_path
         self.blend_file = blend_file
-        with open('res/sceneres.py','r') as tmp:
+        self.path = os.path.dirname(os.path.abspath(__file__))
+
+        with open('{}/res/sceneres.py'.format(self.path),'r') as tmp:
             render_settings = tmp.read()
 
         render_settings = render_settings.replace("{place}", place)
         render_settings = render_settings.replace("{border_boolean}", str(border_boolean))
         render_settings = render_settings.replace("{size_multiplier}", str(size_multiplier))
 
-        with open("res/tmp.py", "w") as out:
+        with open("{}/res/tmp.py".format(self.path), "w") as out:
             out.write(render_settings)
 
         threading.Thread.__init__(self)
 
     def run(self):
-        cmd = 'blender --background {blend} -o {temp}/ -P res/tmp.py -f {num}'.format(blend=self.blend_file, temp=self.render_path, num=self.frame)
+        cmd = 'blender --background {blend} -o {temp}/ -P {path}/res/tmp.py -f {num}'.format(path=self.path,blend=self.blend_file, temp=self.render_path, num=self.frame)
         self.p = subprocess.Popen(cmd.split(),
                              shell=False,
                              stdout=subprocess.PIPE,
